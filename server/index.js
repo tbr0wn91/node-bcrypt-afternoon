@@ -5,6 +5,7 @@ const massive = require('massive');
 const app = express();
 const authCtrl = require('../controllers/authController');
 const treasureCtrl = require('../controllers/treasureController');
+const auth = require('../server/middleware/authMiddleware');
 
 app.use(express.json());
 
@@ -19,7 +20,8 @@ massive(CONNECTION_STRING).then(db => {
 app.use(session({
     secret: SESSION_SECRET,
     resave: true,
-    saveUninitialized: false
+    saveUninitialized: false,
+    
 }));
 
 
@@ -31,7 +33,7 @@ app.get('/auth/logout', authCtrl.logout)
 
 app.get('/api/treasure/dragon', treasureCtrl.dragonTreasure);
 
-app.get('/api/treasure/user', treasureCtrl.getUserTreasure);
+app.get('/api/treasure/user', auth.usersOnly, treasureCtrl.getUserTreasure);
 
 
 
